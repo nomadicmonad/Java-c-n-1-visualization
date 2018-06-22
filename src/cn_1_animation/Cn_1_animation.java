@@ -8,6 +8,9 @@ import java.awt.Graphics2D;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.image.BufferedImage;
+import java.awt.image.BufferedImageOp;
+import java.awt.image.ConvolveOp;
+import java.awt.image.Kernel;
 import java.io.File;
 import javax.swing.JFrame;
 import javax.swing.Timer;
@@ -25,7 +28,7 @@ public class Cn_1_animation extends JFrame implements ActionListener {
     private final int oddDenom = 1;
     private final int numberOfFrames = 30;
     private final int rotationDenom = 1;
-    private static final int interpolation = 2;
+    private static final int interpolation = 6;
     private long[] exp = new long[window];
     private long[][][] exps = new long[numberOfFrames][window][window];
     private long tnDenom = 0;
@@ -35,7 +38,7 @@ public class Cn_1_animation extends JFrame implements ActionListener {
     private int animationCounter = 0;
     private BufferedImage bimage;
     private long seed = -1;
-    private static final int speed = 500;
+    private static final int speed = 2000;
 
     public static void main(String[] args) {
         Cn_1_animation anim = new Cn_1_animation();
@@ -97,6 +100,17 @@ public class Cn_1_animation extends JFrame implements ActionListener {
                 g2.drawRect(i3 * interpolation + 50, i2 * interpolation + 50, 2, 2);
             }
         }
+        int k = 16;
+        float den = (float) k*k;
+        float[] filter = new float[k*k];
+        for (int i = 0; i < k; i++) {
+            for (int i2 = 0; i2 < k; i2++) {
+                filter[i*k + i2] = (float)Math.abs((i-k)*(i2-k))/(k*den);
+            }
+        }
+        Kernel kernel = new Kernel(k, k, filter);
+        BufferedImageOp op = new ConvolveOp(kernel);
+        bimage = op.filter(bimage, null);
         g.drawImage(bimage, 0, 0, this);
         try {
 
@@ -106,6 +120,8 @@ public class Cn_1_animation extends JFrame implements ActionListener {
         } catch (Exception e) {
             e.printStackTrace();
         }
+        
+        bimage = new BufferedImage(window * interpolation + 100, window * interpolation + 100, BufferedImage.TYPE_BYTE_INDEXED);
     }
 
     public void actionPerformed(ActionEvent e) {
