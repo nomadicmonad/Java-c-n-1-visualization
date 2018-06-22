@@ -34,7 +34,7 @@ public class Cn_1_animation extends JFrame implements ActionListener {
     private long iteration = 0;
     private int animationCounter = 0;
     private BufferedImage bimage;
-    private long seed = -33;
+    private long seed = -1;
     private static final int speed = 500;
 
     public static void main(String[] args) {
